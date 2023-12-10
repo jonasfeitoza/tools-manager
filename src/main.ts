@@ -1,35 +1,53 @@
-import { NestFactory } from '@nestjs/core';
+import { HttpAdapterHost, NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ConfigService } from '@nestjs/config';
+import {
+  CorsConfig,
+  NestConfig,
+  SwaggerConfig,
+} from './config/config.interface';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  // Validation
+  app.useGlobalPipes(new ValidationPipe());
+
+  // enable shutdown hook
+  app.enableShutdownHooks();
+
   const configService: ConfigService = app.get(ConfigService);
-  const applicationPort: number = configService.get<number>('port');
+  const appConfig = configService.get<NestConfig>('application');
+  const corsConfig = configService.get<CorsConfig>('cors');
+  const swaggerConfig = configService.get<SwaggerConfig>('swagger');
 
   // enable cors only dev mode
-  if (process.env.APP_ENV !== 'production') {
-    app.enableCors({
-      origin: '*',
-    });
-    // enable swagger only dev mode
-    // const swaggerConfig = new DocumentBuilder()
-    //   .setTitle('Tools Manager Backend API')
-    //   .setVersion('0.0.1')
-    //   .addBearerAuth(
-    //     { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' },
-    //     'JWT',
-    //   )
-    //   .build();
-    //
-    // const swaggerDocument = SwaggerModule.createDocument(app, swaggerConfig);
-    // SwaggerModule.setup('docs', app, swaggerDocument, {
-    //   customSiteTitle: 'Tools Manager - API Docs',
-    // });
+  if (swaggerConfig.enabled) {
+    const swaggerOptions = new DocumentBuilder()
+      .setTitle(swaggerConfig.title)
+      .setDescription(swaggerConfig.description)
+      .setVersion(swaggerConfig.version)
+      .addBearerAuth(
+        { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' },
+        'JWT',
+      )
+      .build();
+
+    const swaggerDocument = SwaggerModule.createDocument(app, swaggerOptions);
+    SwaggerModule.setup(swaggerConfig.path, app, swaggerDocument);
   }
 
-  await app.listen(applicationPort).then(async () => {
-    console.log(`Application is running on: ${await app.getUrl()} 🚀`);
-  });
+  if (corsConfig.enabled) {
+    app.enableCors();
+  }
+
+  await app
+    .listen(process.env.PORT || appConfig.port || 3000)
+    .then(async () => {
+      console.log(`Application is running on: ${await app.getUrl()} 🚀`);
+    });
 }
+
 bootstrap();
