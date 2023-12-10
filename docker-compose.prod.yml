@@ -1,0 +1,41 @@
+version: '3.8'
+
+networks:
+  tm-network:
+    driver: bridge
+
+volumes:
+  postgres_db-data:
+    name: tls_manager-db-data
+
+services:
+  app:
+    container_name: tls_manager-api
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.prod
+    env_file:
+      - .env
+    ports:
+      - "${APP_PORT:-3000}:${APP_PORT:-3000}"
+    networks:
+      - tm-network
+    depends_on:
+      - db
+    volumes:
+      - .:/app
+
+  db:
+    container_name: tls_manager-db
+    image: postgres:15
+    restart: always
+    ports:
+      - "5432:5432"
+    networks:
+      - tm-network
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=secret
+      - POSTGRES_DB=db_tools_manager
+    volumes:
+      - postgres_db-data:/var/lib/postgresql/data

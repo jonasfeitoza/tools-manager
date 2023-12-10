@@ -1,0 +1,13 @@
+.vscode/
+node_modules/
+docker/
+dist/
+test/
+
+Dockerfile
+npm-debug.log
+dist
+.env
+docker-compose.dev.yml
+docker-compose.prod.yml
+Makefile
