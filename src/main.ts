@@ -24,8 +24,7 @@ async function bootstrap() {
   const corsConfig = configService.get<CorsConfig>('cors');
   const swaggerConfig = configService.get<SwaggerConfig>('swagger');
 
-  // enable cors only dev mode
-  if (process.env.NODE_ENV === 'development' && swaggerConfig.enabled) {
+  if (swaggerConfig.enabled) {
     const swaggerOptions = new DocumentBuilder()
       .setTitle(swaggerConfig.title)
       .setDescription(swaggerConfig.description)
