@@ -4,6 +4,7 @@ import configuration from './common/config/config';
 import { PrismaModule } from './prisma.module';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
+import { ToolModule } from './tool/tool.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { AuthModule } from './auth/auth.module';
     PrismaModule,
     UserModule,
     AuthModule,
+    ToolModule,
   ],
   controllers: [],
   providers: [],
