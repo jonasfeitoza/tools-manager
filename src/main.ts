@@ -5,9 +5,10 @@ import {
   CorsConfig,
   NestConfig,
   SwaggerConfig,
-} from './config/config.interface';
+} from './common/config/config.interface';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
+import * as process from 'process';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -24,7 +25,7 @@ async function bootstrap() {
   const swaggerConfig = configService.get<SwaggerConfig>('swagger');
 
   // enable cors only dev mode
-  if (swaggerConfig.enabled) {
+  if (process.env.NODE_ENV === 'development' && swaggerConfig.enabled) {
     const swaggerOptions = new DocumentBuilder()
       .setTitle(swaggerConfig.title)
       .setDescription(swaggerConfig.description)

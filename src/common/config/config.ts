@@ -15,8 +15,9 @@ const config: Config = {
     path: 'docs',
   },
   security: {
-    expiresIn: '2m',
+    expiresIn: '3200s',
     refreshIn: '7d',
+    secret: 'secret',
     bcryptSaltOrRound: 10,
   },
 };
