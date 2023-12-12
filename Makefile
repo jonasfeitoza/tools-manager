@@ -1,5 +1,6 @@
 dev-up:
-	docker-compose -f docker-compose.dev.yml up --build -d
+	docker-compose -f docker-compose.dev.yml up -d
+	make dev-migration
 
 dev-down:
 	docker-compose -f docker-compose.dev.yml down
@@ -30,6 +31,12 @@ prod-build:
 
 prod-bash:
 	docker-compose -f docker-compose.prod.yml exec app bash
+
+dev-migration:
+	docker-compose -f docker-compose.dev.yml exec app npx prisma migrate dev --name init
+
+prod-migration:
+	docker-compose -f docker-compose.prod.yml exec app npx prisma migrate deploy
 
 get-version:
 	@cat package.json | grep version package.json | sed 's/.*"version": "\(.*\)".*/\1/'

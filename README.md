@@ -7,6 +7,8 @@ Construir uma API e banco de dados. A aplicação é um simples repositório par
 ## Running the app
 
 ```bash
+cp .env.example .env
+
 # Docker + Makefile
 $ make dev-build && make dev-up
 
